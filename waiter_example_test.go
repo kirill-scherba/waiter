@@ -22,11 +22,13 @@ func ExampleWaiter() {
 	// Add 10 calls to the waiter
 	for i := range 10 {
 		wg.Add(1)
+
 		// Call the function after the delay time
 		w.Call(func() {
 			fmt.Println("call", i, "executed")
 			wg.Done()
 		})
+		
 		// Log that the call was added to the queue
 		fmt.Println("call", i, "added to queue")
 	}

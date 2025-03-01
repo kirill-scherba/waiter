@@ -1,3 +1,7 @@
+// This example creates a waiter with a delay of 100ms and a queue length of 10.
+// It then adds 10 calls to the waiter and waits for all of them to finish.
+// The waiter will only call the function after the delay time, so all the calls
+// will be called with a delay of 100ms from each other.
 package main
 
 import (
@@ -7,11 +11,6 @@ import (
 
 	"github.com/kirill-scherba/waiter"
 )
-
-// This example creates a waiter with a delay of 100ms and a queue length of 10.
-// It then adds 10 calls to the waiter and waits for all of them to finish.
-// The waiter will only call the function after the delay time, so all the calls
-// will be called with a delay of 100ms from each other.
 
 func main() {
 

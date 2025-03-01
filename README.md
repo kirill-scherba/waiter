@@ -93,6 +93,10 @@ go run ./example
 10:48:19.079824 main.go:46: all calls executed
 ```
 
+Execute this example on Go playground: [https://go.dev/play/p/mne0Z8E9UjK](https://go.dev/play/p/mne0Z8E9UjK)
+
+Or run it on your local machine: `go run ./example`
+
 ## Licence
 
 [BSD](LICENSE)
