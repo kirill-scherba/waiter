@@ -51,7 +51,7 @@ func TestCall(t *testing.T) {
 				// Stop processing after 5 calls
 				if j == 1 && i+1 == 5 {
 					t.Log("stop after", i+1, "calls")
-					if w.Close() {
+					if w.Close() != nil {
 						t.Log("send to stopCh")
 						stopCh <- struct{}{}
 					}

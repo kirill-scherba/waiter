@@ -45,68 +45,115 @@ type Waiter struct {
 func New(delay time.Duration, queueLen int) *Waiter {
 	w := &Waiter{
 		delay: delay,
+		last:  time.Now(),
 		fnCh:  make(chan func(), queueLen),
 	}
 	go w.run()
 	return w
 }
 
+// Call calls the specified function after waiting the specified delay time
+// since the last call.
+//
+// If the Waiter is closed, the function will return ErrWaiterClosed.
+func (w *Waiter) Call(fn func()) (err error) {
+	if w.closed.Load() {
+		// If the Waiter is closed, return ErrWaiterClosed
+		err = ErrWaiterClosed
+		return
+	}
+
+	// Add the function to the channel of functions to call
+	w.fnCh <- fn
+	return
+}
+
+// Wait calls the specified function after waiting the specified delay time
+// since the last call.
+//
+// This function is similar to Call but it waits until the specified function
+// is called and returns any error that occurred.
+func (w *Waiter) Wait(f func()) error {
+	// Create a channel to receive the error
+	done := make(chan error)
+
+	// Start a new goroutine to call the function
+	go func() {
+		// Call the function with the specified delay
+		if err := w.Call(func() {
+			// Call the function
+			f()
+
+			// Send the error to the channel
+			done <- nil
+		}); err != nil {
+			// If there is an error, send it to the channel
+			done <- err
+		}
+	}()
+
+	// Wait until the f function is called and error is received 
+	// from the done channel
+	return <-done
+}
+
+// Len returns the number of functions currently waiting in the channel.
+func (w *Waiter) Len() int {
+	return len(w.fnCh)
+}
+
+// Close closes the Waiter and stops it from calling any more functions.
+//
+// If the Waiter is already closed, the function will return ErrWaiterClosed 
+// error.
+func (w *Waiter) Close() (err error) {
+	// Set the closed flag to true
+	if !w.closed.CompareAndSwap(false, true) {
+		// If the flag is already true, return ErrWaiterClosed
+		err = ErrWaiterClosed
+	}
+	return
+}
+
+// run starts a new goroutine to run the Waiter object.
+// It loops through the channel of functions to call and calls them with the
+// specified delay.
 func (w *Waiter) run() {
+	// Loop through the channel of functions to call
 	for fn := range w.fnCh {
+		// If the Waiter is closed, exit the loop
 		if w.closed.Load() {
 			break
 		}
+
+		// Wait the specified delay before calling the function
 		w.wait()
+
+		// Call the function
 		fn()
 	}
 }
 
+// wait waits the specified delay time since the last call before calling the
+// next function.
 func (w *Waiter) wait() {
+	// Get the current time
 	now := time.Now()
 
+	// If the last call time is zero, set it to the current time
 	if w.last.IsZero() {
 		w.last = now
 		return
 	}
 
+	// Calculate the time elapsed since the last call
 	elapsed := now.Sub(w.last)
+
+	// If the elapsed time is less than the delay, sleep for the difference
 	if elapsed < w.delay {
 		time.Sleep(w.delay - elapsed)
 	}
 
+	// Update the last call time
 	w.last = time.Now()
-}
-
-func (w *Waiter) Call(fn func()) (err error) {
-	if w.closed.Load() {
-		err = ErrWaiterClosed
-		return
-	}
-
-	w.fnCh <- fn
-	return
-}
-
-func (w *Waiter) Wait(f func()) error {
-	done := make(chan error)
-	go func() {
-		if err := w.Call(func() { f(); done <- nil }); err != nil {
-			done <- err
-		}
-	}()
-	return <-done
-}
-
-func (w *Waiter) Len() int {
-	return len(w.fnCh)
-}
-
-func (w *Waiter) Close() bool {
-	if !w.closed.CompareAndSwap(false, true) {
-		fmt.Println("was already closed")
-		return false
-	}
-	fmt.Println("set closed")
-
-	return true
 }
