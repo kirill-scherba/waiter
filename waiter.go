@@ -92,7 +92,7 @@ func (w *Waiter) Wait(f func()) error {
 		}
 	}()
 
-	// Wait until the f function is called and error is received 
+	// Wait until the f function is called and error is received
 	// from the done channel
 	return <-done
 }
@@ -104,7 +104,7 @@ func (w *Waiter) Len() int {
 
 // Close closes the Waiter and stops it from calling any more functions.
 //
-// If the Waiter is already closed, the function will return ErrWaiterClosed 
+// If the Waiter is already closed, the function will return ErrWaiterClosed
 // error.
 func (w *Waiter) Close() (err error) {
 	// Set the closed flag to true

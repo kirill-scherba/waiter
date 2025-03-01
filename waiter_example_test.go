@@ -28,7 +28,7 @@ func ExampleWaiter() {
 			fmt.Println("call", i, "executed")
 			wg.Done()
 		})
-		
+
 		// Log that the call was added to the queue
 		fmt.Println("call", i, "added to queue")
 	}
@@ -44,28 +44,28 @@ func ExampleWaiter() {
 
 	// Output:
 	/*
-waiter created
-call 0 added to queue
-call 1 added to queue
-call 2 added to queue
-call 3 added to queue
-call 4 added to queue
-call 5 added to queue
-call 6 added to queue
-call 7 added to queue
-call 8 added to queue
-call 9 added to queue
-all calls added to queue
-call 0 executed
-call 1 executed
-call 2 executed
-call 3 executed
-call 4 executed
-call 5 executed
-call 6 executed
-call 7 executed
-call 8 executed
-call 9 executed
-all calls executed
+		waiter created
+		call 0 added to queue
+		call 1 added to queue
+		call 2 added to queue
+		call 3 added to queue
+		call 4 added to queue
+		call 5 added to queue
+		call 6 added to queue
+		call 7 added to queue
+		call 8 added to queue
+		call 9 added to queue
+		all calls added to queue
+		call 0 executed
+		call 1 executed
+		call 2 executed
+		call 3 executed
+		call 4 executed
+		call 5 executed
+		call 6 executed
+		call 7 executed
+		call 8 executed
+		call 9 executed
+		all calls executed
 	*/
 }
