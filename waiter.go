@@ -52,6 +52,20 @@ func New(delay time.Duration, queueLen int) *Waiter {
 	return w
 }
 
+// RateLimit returns the time to wait between calls based on the specified
+// quantity and time delay. The return value is the time to wait between calls,
+// it uses in the New function call.
+//
+// The rate limit is calculated as follows:
+//
+//	delay / quantity
+//
+// For example, if you need to call a function at a rate of 100 per second, you
+// can use RateLimit(100, 1*time.Second) in the New function call.
+func RateLimit(quantity int, delay time.Duration) time.Duration {
+	return delay / time.Duration(quantity)
+}
+
 // Call calls the specified function after waiting the specified delay time
 // since the last call.
 //
