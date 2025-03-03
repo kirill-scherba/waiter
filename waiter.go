@@ -87,7 +87,7 @@ func (w *Waiter) Call(fn func()) (err error) {
 //
 // This function is similar to Call but it waits until the specified function
 // is called and returns any error that occurred.
-func (w *Waiter) Wait(f func()) error {
+func (w *Waiter) Wait(fn func()) error {
 	// Create a channel to receive the error
 	done := make(chan error)
 
@@ -96,9 +96,11 @@ func (w *Waiter) Wait(f func()) error {
 		// Call the function with the specified delay
 		if err := w.Call(func() {
 			// Call the function
-			f()
+			if fn != nil {
+				fn()
+			}
 
-			// Send the error to the channel
+			// Send nil error to the channel
 			done <- nil
 		}); err != nil {
 			// If there is an error, send it to the channel
@@ -144,7 +146,9 @@ func (w *Waiter) run() {
 		w.wait()
 
 		// Call the function
-		fn()
+		if fn != nil {
+			fn()
+		}
 	}
 }
 
